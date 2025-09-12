@@ -1,0 +1,222 @@
+<div class="work-order-search-container">
+  <div class="page-header">
+    <h1>Work Order Search</h1>
+    <p>Search for work orders using the Zcatsv2_Wo_Get_List RFC</p>
+  </div>
+
+  <div class="search-form" *ngIf="!isLoading">
+    <!-- VIN Search -->
+    <div class="form-section">
+      <h3>VIN Search</h3>
+      <div class="form-row">
+        <label for="vin">VIN Number:</label>
+        <input 
+          type="text" 
+          id="vin" 
+          [(ngModel)]="searchCriteria.vin" 
+          placeholder="Enter VIN number"
+          class="form-input">
+      </div>
+    </div>
+
+    <!-- Work Order Types -->
+    <div class="form-section">
+      <h3>Work Order Types</h3>
+      <div class="checkbox-group">
+        <div *ngFor="let woType of formData.wo_types" class="checkbox-item">
+          <input 
+            type="checkbox" 
+            [id]="'wo-type-' + woType.value"
+            [value]="woType.value"
+            (change)="onWoTypeChange($event)">
+          <label [for]="'wo-type-' + woType.value">{{woType.text}}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Order Status -->
+    <div class="form-section">
+      <h3>Work Order Status</h3>
+      <div class="checkbox-group">
+        <div *ngFor="let woStatus of formData.wo_statuses" class="checkbox-item">
+          <input 
+            type="checkbox" 
+            [id]="'wo-status-' + woStatus.value"
+            [value]="woStatus.value"
+            (change)="onWoStatusChange($event)">
+          <label [for]="'wo-status-' + woStatus.value">{{woStatus.text}}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Foreground Status -->
+    <div class="form-section">
+      <h3>Foreground Status</h3>
+      <div class="checkbox-group">
+        <div *ngFor="let fgStatus of formData.fg_statuses" class="checkbox-item">
+          <input 
+            type="checkbox" 
+            [id]="'fg-status-' + fgStatus.value"
+            [value]="fgStatus.value"
+            (change)="onFgStatusChange($event)">
+          <label [for]="'fg-status-' + fgStatus.value">{{fgStatus.text}}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dropdowns -->
+    <div class="form-section">
+      <h3>Additional Criteria</h3>
+      <div class="form-row">
+        <div class="form-column">
+          <label for="country">Country:</label>
+          <select id="country" [(ngModel)]="searchCriteria.country" class="form-select">
+            <option value="">Select Country</option>
+            <option *ngFor="let country of formData.countries" [value]="country.value">{{country.text}}</option>
+          </select>
+        </div>
+        
+        <div class="form-column">
+          <label for="ra-country">RA Country:</label>
+          <select id="ra-country" [(ngModel)]="searchCriteria.ra_country" class="form-select">
+            <option value="">Select RA Country</option>
+            <option *ngFor="let raCountry of formData.ra_countries" [value]="raCountry.value">{{raCountry.text}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-column">
+          <label for="approval-status">Approval Status:</label>
+          <select id="approval-status" [(ngModel)]="searchCriteria.wonay" class="form-select">
+            <option value="">Select Approval Status</option>
+            <option *ngFor="let approvalStatus of formData.approval_statuses" [value]="approvalStatus.value">{{approvalStatus.text}}</option>
+          </select>
+        </div>
+        
+        <div class="form-column">
+          <label for="strategy">Strategy:</label>
+          <select id="strategy" (change)="onStrategyChange($any($event.target).value)" class="form-select">
+            <option value="">Select Strategy</option>
+            <option *ngFor="let strategy of formData.strategies" [value]="strategy.value">{{strategy.text}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkboxes -->
+    <div class="form-section">
+      <h3>Additional Options</h3>
+      <div class="checkbox-group">
+        <div class="checkbox-item">
+          <input type="checkbox" id="convert-check" [(ngModel)]="convertCheck">
+          <label for="convert-check">Convert Check</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="only-login-user" [(ngModel)]="onlyLoginUser">
+          <label for="only-login-user">Only Login User</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="egypt-selected" [(ngModel)]="egyptSelected">
+          <label for="egypt-selected">Egypt Selected</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="demo-selected" [(ngModel)]="demoSelected">
+          <label for="demo-selected">Demo Selected</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Buttons -->
+    <div class="form-actions">
+      <button 
+        type="button" 
+        (click)="searchWorkOrders()" 
+        [disabled]="isLoading"
+        class="btn btn-primary">
+        Search Work Orders
+      </button>
+      <button 
+        type="button" 
+        (click)="clearSearch()" 
+        class="btn btn-secondary">
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Loading...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <p class="error-message">{{error}}</p>
+  </div>
+
+  <!-- Search Results -->
+  <div *ngIf="hasSearched && !isLoading && !error" class="search-results">
+    <div class="results-header">
+      <h2>Search Results ({{workOrders.length}} work orders found)</h2>
+    </div>
+    
+    <div *ngIf="workOrders.length === 0" class="no-results">
+      <p>No work orders found matching your search criteria.</p>
+    </div>
+
+    <div *ngIf="workOrders.length > 0" class="results-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Work Order No.</th>
+            <th>Creation Date</th>
+            <th>VIN</th>
+            <th>Dealer Code</th>
+            <th>WO Type</th>
+            <th>WO Status</th>
+            <th>FG Status</th>
+            <th>RA Country</th>
+            <th>Approval Status</th>
+            <th>Created By</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let wo of workOrders" class="result-row">
+            <td class="wo-number">{{wo.wono}}</td>
+            <td>{{wo.credate}}</td>
+            <td class="vin">{{wo.vin}}</td>
+            <td>{{wo.dealer_code}}</td>
+            <td>{{wo.wo_type_text}} ({{wo.wo_type}})</td>
+            <td>
+              <span [class]="'status-badge status-' + wo.wo_status">
+                {{wo.wo_status_text}}
+              </span>
+            </td>
+            <td>{{wo.fg_status_text}}</td>
+            <td>{{wo.ra_country_text}}</td>
+            <td>{{wo.wo_onay_text}}</td>
+            <td>{{wo.creuser}}</td>
+            <td>
+              <button 
+                *ngIf="wo.enability_button" 
+                class="btn btn-action">
+                Action
+              </button>
+              <span *ngIf="!wo.enability_button" class="no-action">-</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Reject Notes -->
+      <div *ngFor="let wo of workOrders" class="reject-notes">
+        <div *ngIf="wo.reject_note && wo.reject_note.trim().length > 0" class="reject-note-item">
+          <strong>Reject Note for {{wo.wono}}:</strong>
+          <p>{{wo.reject_note}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
