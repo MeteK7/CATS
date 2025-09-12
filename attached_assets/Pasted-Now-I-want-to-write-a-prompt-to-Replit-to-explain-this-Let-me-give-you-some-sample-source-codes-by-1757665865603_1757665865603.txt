@@ -1,0 +1,194 @@
+Now I want to write a prompt to Replit to explain this. Let me give you some sample source codes, by the way. Here is WOFView.java: "  //@@begin javadoc:onActionactSearchWO(ServerEvent)
+  /**
+   * Declared validating event handler.
+   */
+  //@@end
+  public void onActionactSearchWO(com.sap.tc.webdynpro.progmodel.api.IWDCustomEvent wdEvent )
+  {
+    //@@begin onActionactSearchWO(ServerEvent)
+		Method_Search_WO();
+    //@@end
+  }   //@@begin javadoc:Method_Search_WO()
+  /**
+   * Declared method.
+   */
+  //@@end
+  public void Method_Search_WO( )  {
+    //@@begin Method_Search_WO()
+		if (wdContext.nodeWo_Type_COPY_SEARCH().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setWo_Type(
+					wdContext.currentWo_Type_COPY_SEARCHElement().getWo_Type());
+		else
+			wdContext.currentI_Search_GET_LISTElement().setWo_Type(null);
+		if (wdContext.nodeWo_Status_COPY_SEARCH().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setWo_Status(
+					wdContext.currentWo_Status_COPY_SEARCHElement()
+							.getWo_Status());
+		else
+			wdContext.currentI_Search_GET_LISTElement().setWo_Status(null);
+		
+		if (wdContext.nodeFg_Status_COPY_SEARCH().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setFg_Status_Multi(
+					wdContext.currentFg_Status_COPY_SEARCHElement()
+							.getFg_Status());
+		else
+			wdContext.currentI_Search_GET_LISTElement().setFg_Status_Multi(null);
+				
+		if (wdContext.nodeTe_Country_List().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setCountry(
+					wdContext.nodeTe_Country_List()
+							.getTe_Country_ListElementAt(
+									wdContext.nodeTe_Country_List()
+											.getLeadSelection()).getLand1());
+		
+		else
+			wdContext.currentI_Search_GET_LISTElement().setCountry(null);
+		
+		if (wdContext.nodeApprovallStatus().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setWonay(
+					wdContext.currentApprovallStatusElement().getCode());
+		else
+			wdContext.currentI_Search_GET_LISTElement().setWonay(null);
+
+		wdContext.currentZcatsv2_Wo_Get_List_InputElement().setI_Lang(
+				wdContext.currentUserElement().getLang());
+		wdContext.currentZcatsv2_Wo_Get_List_InputElement().setI_Usercode(
+				wdContext.currentUserElement().getUsercode());
+
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Td(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tg(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Ti(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tf(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tx(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Ty(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tz(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tu(null);
+		
+		
+
+		int strategyLeadSelection = wdContext.nodeSTRATEGY_DATA()
+				.getLeadSelection();
+		if (strategyLeadSelection != -1) {
+			ISTRATEGY_DATAElement strategyElement = wdContext
+					.nodeSTRATEGY_DATA().getSTRATEGY_DATAElementAt(
+							strategyLeadSelection);
+
+			if ("TG".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tg("X");
+			}
+			else if ("TI".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Ti("X");
+			} 
+			else if ("TD".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Td("X");
+			} 
+			else if ("TF".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tf("X");
+			}
+			else if ("TU".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tu("X");
+			}
+			else if ("TX".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tx("X");
+			}
+			else if ("TY".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Ty("X");
+			}
+			else if ("TZ".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tz("X");
+			}
+		
+		}
+
+		if (wdContext.nodeRA_Countries().getLeadSelection() != -1) {
+			wdContext.currentI_Search_GET_LISTElement().setRa_Country(
+					wdContext.nodeRA_Countries().getRA_CountriesElementAt(
+							wdContext.nodeRA_Countries().getLeadSelection())
+							.getLand1());
+		}
+
+		if (wdContext.currentContextElement().getConvertChkChecked()) {
+			wdContext.currentI_Search_GET_LISTElement().setZcats_Wo_Conv("X");
+		} else {
+			wdContext.currentI_Search_GET_LISTElement().setZcats_Wo_Conv("");
+		}
+
+		if (wdContext.currentContextElement().getOnlyLoginUser()) {
+			wdContext.currentI_Search_GET_LISTElement().setCreuser(
+					wdContext.currentUserElement().getUsercode());
+		} else {
+			wdContext.currentI_Search_GET_LISTElement().setCreuser("");
+		}
+
+		if (wdContext.currentContextElement().getEgyptselected()) {
+			wdContext.currentI_Search_GET_LISTElement().setZgos("X");
+		} else {
+			wdContext.currentI_Search_GET_LISTElement().setZgos(null);
+		}
+		if (wdContext.currentContextElement().getDemoSelected()) {
+			wdContext.currentI_Search_GET_LISTElement().setDemo("X");
+		} else {
+			wdContext.currentI_Search_GET_LISTElement().setDemo("");
+		}
+		String vin = wdContext.currentI_Search_GET_LISTElement().getVin();
+		if (vin != null && vin.trim().length() > 0) {
+			wdContext.currentI_Search_GET_LISTElement().setVin(
+					vin.toUpperCase(Locale.ENGLISH));
+		}
+		IWo_Type_COPY_SEARCHNode listTypesNodes = wdContext.nodeWo_Type_COPY_SEARCH();
+		String selWoType = "";
+		 for (int i = 0; i < listTypesNodes.size(); i++) {
+				if(listTypesNodes.isMultiSelected(i))
+					//Selected element;
+					selWoType += listTypesNodes.getElementAt(i).getAttributeAsText("Wo_Type") + ",";
+			}
+		 
+		 wdContext.currentI_Search_GET_LISTElement().setWo_Type_Multi(selWoType);
+		 
+		 IWo_Status_COPY_SEARCHNode listStatusNodes = wdContext.nodeWo_Status_COPY_SEARCH();
+			String selStatusType = "";
+			 for (int i = 0; i < listStatusNodes.size(); i++) {
+					if(listStatusNodes.isMultiSelected(i))
+						//Selected element;
+						selStatusType += listStatusNodes.getElementAt(i).getAttributeAsText("Wo_Status") + ",";
+				}
+			 
+			 wdContext.currentI_Search_GET_LISTElement().setWo_Status_Multi(selStatusType);
+			 
+			 IFg_Status_COPY_SEARCHNode listFgStatusNodes = wdContext.nodeFg_Status_COPY_SEARCH();
+				String selFgStatusType = "";
+				 for (int i = 0; i < listFgStatusNodes.size(); i++) {
+						if(listFgStatusNodes.isMultiSelected(i))
+							//Selected element;
+							selFgStatusType += listFgStatusNodes.getElementAt(i).getAttributeAsText("Fg_Status") + ",";
+					}
+				 
+			wdContext.currentI_Search_GET_LISTElement().setFg_Status_Multi(selFgStatusType);
+				 
+		wdThis.wdGetWOFCompController().executeRFC_GET_LIST();
+		if (wdContext.currentEs_Return_GET_LISTElement().getErrtyp()
+				.equals("E")) {
+			wdContext.nodeMsgs().invalidate();
+			IPrivateWOFView.IMsgsElement iel = wdContext.createMsgsElement();
+			iel.setErrtyp(wdContext.currentEs_Return_GET_LISTElement()
+					.getErrtyp());
+			iel.setMessg(wdContext.currentEs_Return_GET_LISTElement()
+					.getMessg());
+			iel.setMsgcode(wdContext.currentEs_Return_GET_LISTElement()
+					.getMsgcode());
+			wdContext.nodeMsgs().addElement(iel);
+			wdThis.wdGetWOFCompController().openMsgWin();
+		} else {
+			wdContext.currentVisibilityElement().setSearch_table(
+					WDVisibility.VISIBLE);
+		}
+    //@@end
+  }"

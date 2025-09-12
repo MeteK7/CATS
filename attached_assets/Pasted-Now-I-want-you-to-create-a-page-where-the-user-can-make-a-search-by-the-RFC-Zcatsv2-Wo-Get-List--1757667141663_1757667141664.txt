@@ -1,0 +1,495 @@
+Now, I want you to create a page where the user can make a search by the RFC "Zcatsv2_Wo_Get_List".
+
+Here is WOFView.java: "
+  public void wdDoInit()
+  {
+    //@@begin wdDoInit()
+		IWDClientUser clientUser = WDClientUser.forceLoggedInClientUser();
+		IUser sapUser = clientUser.getSAPUser();
+		String user = sapUser.getName();
+		if(user.equalsIgnoreCase("agulsen")) user = "OGOKER";
+		Locale locale = sapUser.getLocale();
+		wdContext.currentUserElement().setUsercode(user.toUpperCase());
+		wdContext.currentUserElement().setLang(locale.getLanguage());
+
+		Zcatsv2_Mas_User_Check_Input check = new Zcatsv2_Mas_User_Check_Input(new ZCATSV2_MAS_USER_CHECK());
+		wdContext.nodeZcatsv2_Mas_User_Check_Input().bind(check);
+		
+		wdContext.nodeZpcc_User_Get_Input().bind(new Zpcc_User_Get_Input(new ZPCC_USER_GET()));
+
+		wdContext.nodeZcatsv2_Def_Detail_Input().bind(new Zcatsv2_Def_Detail_Input(new ZCATSV2_DEF_DETAIL()));
+		
+		wdContext.nodeZcatsv2_Part_Backclaim_History_Input().bind(new Zcatsv2_Part_Backclaim_History_Input(new ZCATSV2_PART_BACKCLAIM_HISTORY()));
+
+		Zcatsv2_Wo_Convert_Input wo_convert = new Zcatsv2_Wo_Convert_Input(new ZCATSV2_WO_CONVERT());
+		wdContext.nodeZcatsv2_Wo_Convert_Input().bind(wo_convert);
+		
+		wdContext.currentZcatsv2_Mas_User_Check_InputElement().setI_Lang(
+			locale.getLanguage());
+		wdContext.currentZcatsv2_Mas_User_Check_InputElement().setI_Usercode(
+			user.toUpperCase());
+
+		wdThis.executeRFC_USER_CHECK();
+
+		ZCATSV2_WO_GET_LIST zcatsv2WOGETLIST = new ZCATSV2_WO_GET_LIST();
+		Zcatsv2_Wo_Get_List_Input list = new Zcatsv2_Wo_Get_List_Input(zcatsv2WOGETLIST);
+		Zcatsv2_Wo_S003 model50 = new Zcatsv2_Wo_S003(zcatsv2WOGETLIST);
+		list.setI_Search(model50);
+		wdContext.nodeZcatsv2_Wo_Get_List_Input().bind(list);
+		
+		
+		wdThis.getConfiguration();
+		wdThis.getConfiguration1();
+    //@@end
+  }
+
+  //@@begin javadoc:onActionactSearchWO(ServerEvent)
+  /**
+   * Declared validating event handler.
+   */
+  //@@end
+  public void onActionactSearchWO(com.sap.tc.webdynpro.progmodel.api.IWDCustomEvent wdEvent )
+  {
+    //@@begin onActionactSearchWO(ServerEvent)
+		Method_Search_WO();
+    //@@end
+  }   //@@begin javadoc:Method_Search_WO()
+  /**
+   * Declared method.
+   */
+  //@@end
+  public void Method_Search_WO( )  {
+    //@@begin Method_Search_WO()
+		if (wdContext.nodeWo_Type_COPY_SEARCH().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setWo_Type(
+					wdContext.currentWo_Type_COPY_SEARCHElement().getWo_Type());
+		else
+			wdContext.currentI_Search_GET_LISTElement().setWo_Type(null);
+		if (wdContext.nodeWo_Status_COPY_SEARCH().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setWo_Status(
+					wdContext.currentWo_Status_COPY_SEARCHElement()
+							.getWo_Status());
+		else
+			wdContext.currentI_Search_GET_LISTElement().setWo_Status(null);
+		
+		if (wdContext.nodeFg_Status_COPY_SEARCH().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setFg_Status_Multi(
+					wdContext.currentFg_Status_COPY_SEARCHElement()
+							.getFg_Status());
+		else
+			wdContext.currentI_Search_GET_LISTElement().setFg_Status_Multi(null);
+				
+		if (wdContext.nodeTe_Country_List().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setCountry(
+					wdContext.nodeTe_Country_List()
+							.getTe_Country_ListElementAt(
+									wdContext.nodeTe_Country_List()
+											.getLeadSelection()).getLand1());
+		
+		else
+			wdContext.currentI_Search_GET_LISTElement().setCountry(null);
+		
+		if (wdContext.nodeApprovallStatus().getLeadSelection() != -1)
+			wdContext.currentI_Search_GET_LISTElement().setWonay(
+					wdContext.currentApprovallStatusElement().getCode());
+		else
+			wdContext.currentI_Search_GET_LISTElement().setWonay(null);
+
+		wdContext.currentZcatsv2_Wo_Get_List_InputElement().setI_Lang(
+				wdContext.currentUserElement().getLang());
+		wdContext.currentZcatsv2_Wo_Get_List_InputElement().setI_Usercode(
+				wdContext.currentUserElement().getUsercode());
+
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Td(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tg(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Ti(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tf(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tx(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Ty(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tz(null);
+		wdContext.currentI_Search_GET_LISTElement().setOstrateji_Tu(null);
+		
+		
+
+		int strategyLeadSelection = wdContext.nodeSTRATEGY_DATA()
+				.getLeadSelection();
+		if (strategyLeadSelection != -1) {
+			ISTRATEGY_DATAElement strategyElement = wdContext
+					.nodeSTRATEGY_DATA().getSTRATEGY_DATAElementAt(
+							strategyLeadSelection);
+
+			if ("TG".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tg("X");
+			}
+			else if ("TI".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Ti("X");
+			} 
+			else if ("TD".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Td("X");
+			} 
+			else if ("TF".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tf("X");
+			}
+			else if ("TU".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tu("X");
+			}
+			else if ("TX".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tx("X");
+			}
+			else if ("TY".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Ty("X");
+			}
+			else if ("TZ".equalsIgnoreCase(strategyElement.getValue())) {
+				wdContext.currentI_Search_GET_LISTElement()
+						.setOstrateji_Tz("X");
+			}
+		
+		}
+
+		if (wdContext.nodeRA_Countries().getLeadSelection() != -1) {
+			wdContext.currentI_Search_GET_LISTElement().setRa_Country(
+					wdContext.nodeRA_Countries().getRA_CountriesElementAt(
+							wdContext.nodeRA_Countries().getLeadSelection())
+							.getLand1());
+		}
+
+		if (wdContext.currentContextElement().getConvertChkChecked()) {
+			wdContext.currentI_Search_GET_LISTElement().setZcats_Wo_Conv("X");
+		} else {
+			wdContext.currentI_Search_GET_LISTElement().setZcats_Wo_Conv("");
+		}
+
+		if (wdContext.currentContextElement().getOnlyLoginUser()) {
+			wdContext.currentI_Search_GET_LISTElement().setCreuser(
+					wdContext.currentUserElement().getUsercode());
+		} else {
+			wdContext.currentI_Search_GET_LISTElement().setCreuser("");
+		}
+
+		if (wdContext.currentContextElement().getEgyptselected()) {
+			wdContext.currentI_Search_GET_LISTElement().setZgos("X");
+		} else {
+			wdContext.currentI_Search_GET_LISTElement().setZgos(null);
+		}
+		if (wdContext.currentContextElement().getDemoSelected()) {
+			wdContext.currentI_Search_GET_LISTElement().setDemo("X");
+		} else {
+			wdContext.currentI_Search_GET_LISTElement().setDemo("");
+		}
+		String vin = wdContext.currentI_Search_GET_LISTElement().getVin();
+		if (vin != null && vin.trim().length() > 0) {
+			wdContext.currentI_Search_GET_LISTElement().setVin(
+					vin.toUpperCase(Locale.ENGLISH));
+		}
+		IWo_Type_COPY_SEARCHNode listTypesNodes = wdContext.nodeWo_Type_COPY_SEARCH();
+		String selWoType = "";
+		 for (int i = 0; i < listTypesNodes.size(); i++) {
+				if(listTypesNodes.isMultiSelected(i))
+					//Selected element;
+					selWoType += listTypesNodes.getElementAt(i).getAttributeAsText("Wo_Type") + ",";
+			}
+		 
+		 wdContext.currentI_Search_GET_LISTElement().setWo_Type_Multi(selWoType);
+		 
+		 IWo_Status_COPY_SEARCHNode listStatusNodes = wdContext.nodeWo_Status_COPY_SEARCH();
+			String selStatusType = "";
+			 for (int i = 0; i < listStatusNodes.size(); i++) {
+					if(listStatusNodes.isMultiSelected(i))
+						//Selected element;
+						selStatusType += listStatusNodes.getElementAt(i).getAttributeAsText("Wo_Status") + ",";
+				}
+			 
+			 wdContext.currentI_Search_GET_LISTElement().setWo_Status_Multi(selStatusType);
+			 
+			 IFg_Status_COPY_SEARCHNode listFgStatusNodes = wdContext.nodeFg_Status_COPY_SEARCH();
+				String selFgStatusType = "";
+				 for (int i = 0; i < listFgStatusNodes.size(); i++) {
+						if(listFgStatusNodes.isMultiSelected(i))
+							//Selected element;
+							selFgStatusType += listFgStatusNodes.getElementAt(i).getAttributeAsText("Fg_Status") + ",";
+					}
+				 
+			wdContext.currentI_Search_GET_LISTElement().setFg_Status_Multi(selFgStatusType);
+				 
+		wdThis.wdGetWOFCompController().executeRFC_GET_LIST();
+		if (wdContext.currentEs_Return_GET_LISTElement().getErrtyp()
+				.equals("E")) {
+			wdContext.nodeMsgs().invalidate();
+			IPrivateWOFView.IMsgsElement iel = wdContext.createMsgsElement();
+			iel.setErrtyp(wdContext.currentEs_Return_GET_LISTElement()
+					.getErrtyp());
+			iel.setMessg(wdContext.currentEs_Return_GET_LISTElement()
+					.getMessg());
+			iel.setMsgcode(wdContext.currentEs_Return_GET_LISTElement()
+					.getMsgcode());
+			wdContext.nodeMsgs().addElement(iel);
+			wdThis.wdGetWOFCompController().openMsgWin();
+		} else {
+			wdContext.currentVisibilityElement().setSearch_table(
+					WDVisibility.VISIBLE);
+		}
+    //@@end
+  }".
+
+Here is WOFComp.java: "
+  //@@begin javadoc:executeRFC_GET_LIST()
+  /**
+   * Declared method.
+   */
+  //@@end
+  public void executeRFC_GET_LIST( )  {
+    //@@begin executeRFC_GET_LIST()
+		try
+		{
+			wdContext
+				.currentZcatsv2_Wo_Get_List_InputElement()
+				.modelObject()
+				.execute();
+		}
+		catch (ARFC2ModelExecuteException e)
+		{
+			// TODO Auto-generated catch block
+			wdComponentAPI.getMessageManager().reportException(
+				e.toString(),
+				true);
+		}
+		wdContext.nodeOutput_GET_LIST().invalidate();
+		wdContext
+			.currentZcatsv2_Wo_Get_List_InputElement()
+			.modelObject()
+			.modelInstance()
+			.disconnectIfAlive();
+
+		wdContext.nodeWo_List_COPY().invalidate();
+
+		for (int i = 0; i < wdContext.nodeTe_Wo_List_GET_LIST().size(); i++)
+		{
+			IPrivateWOFComp.ITe_Wo_List_GET_LISTElement oel =
+				wdContext
+					.nodeTe_Wo_List_GET_LIST()
+					.getTe_Wo_List_GET_LISTElementAt(
+					i);
+					
+			if((wdContext.currentContextElement().getPdsselected() && oel.getPds().equalsIgnoreCase("X")) 
+					 || !wdContext.currentContextElement().getPdsselected()) {
+						
+						IWo_List_COPYElement iel = wdContext.createWo_List_COPYElement();
+						iel.setCredate(oel.getCredate());
+						iel.setDealer_Code(oel.getDealer_Code());
+						iel.setVin(oel.getVin());
+						iel.setWo_Status(oel.getWo_Status());
+						iel.setWo_Status_Text(oel.getWo_Status_Text());
+						iel.setWo_Type(oel.getWo_Type());
+						iel.setWo_Type_Text(oel.getWo_Type_Text());
+						iel.setFG_Status_Text(oel.getFg_Status_Text());
+						iel.setPds(oel.getPds());
+						iel.setDemo(oel.getDemo());
+						iel.setWono(oel.getWono());
+						iel.setCreuser(oel.getCreuser());
+						iel.setRa_country(oel.getRa_Country_Text());
+						if(oel.getWonaytext()!=null)
+							iel.setWo_onay_text(oel.getWonaytext());
+						iel.setReject_note("");
+						for(int j = 0 ; j < wdContext.nodeS_Not_GET_LIST().size() ; j++){
+							IPrivateWOFComp.IS_Not_GET_LISTElement sel = wdContext.nodeS_Not_GET_LIST().getS_Not_GET_LISTElementAt(j);
+							if(iel.getWono().equalsIgnoreCase(sel.getWono())){
+								iel.setReject_note(iel.getReject_note()+sel.getT_Line());
+							}
+						}
+						if (oel.getWo_Status().equals("41"))
+						{
+							iel.setEnability_button(true);
+						}
+						else
+						{
+							iel.setEnability_button(false);
+						}
+						wdContext.nodeWo_List_COPY().addElement(iel);						
+			}
+
+		}
+    //@@end
+  }
+
+  public void getConfiguration( )  {
+    //@@begin getConfiguration()
+		try
+		{
+			String systemName = System.getProperty("SAPSYSTEMNAME");
+		    String JNDI_NAME = "jdbc/" + "SAP" + systemName + "DB";
+			InitialContext ctx = new InitialContext();
+			javax.sql.DataSource ds =
+				(javax.sql.DataSource) ctx.lookup(JNDI_NAME);
+			java.sql.Connection con = ds.getConnection();
+			con.setAutoCommit(false);
+			java.sql.Statement stmt = con.createStatement();
+			ResultSet rs =
+				stmt.executeQuery(
+					"SELECT * FROM TEMSA_PORTCONFIG ORDER BY PARAMETER");
+			while (rs.next())
+			{
+
+				String path_param = "";
+				if(System.getProperty("os.name").indexOf("indows")>=0)
+					path_param="TEMP_FOLDER_NAME_WIN";
+				else path_param = "TEMP_FOLDER_NAME";
+				//Temp Folder
+				if (rs.getString("AREA").equals("GENEL")
+					&& rs.getString("PARAMETER").equals(path_param))
+				{
+					wdContext.currentCONFIGElement().setTemp_Folder(
+						rs.getString("VAL"));
+				}
+
+				//				KM Folder
+				if (rs.getString("AREA").equals("CATS2")
+					&& rs.getString("PARAMETER").equals("WO_KM_FOLDER"))
+				{
+					wdContext.currentCONFIGElement().setKM_Folder(
+						rs.getString("VAL"));
+				}
+
+				if (rs.getString("AREA").equals("CATS2")
+					&& rs.getString("PARAMETER").equals("EPART_LINK"))
+				{
+					wdContext.currentCONFIGElement().setEpart_Link(
+						rs.getString("VAL"));
+				}
+
+			}
+			con.close();
+		}
+		catch (NamingException e)
+		{
+			e.printStackTrace();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+    //@@end
+  }
+
+  public void getConfiguration1( )  {
+    //@@begin getConfiguration1()
+	try
+	{
+		String systemName = System.getProperty("SAPSYSTEMNAME");
+	    String JNDI_NAME = "jdbc/" + "SAP" + systemName + "DB";
+		InitialContext ctx = new InitialContext();
+		javax.sql.DataSource ds =
+			(javax.sql.DataSource) ctx.lookup(JNDI_NAME);
+		java.sql.Connection con = ds.getConnection();
+		con.setAutoCommit(false);
+		java.sql.Statement stmt = con.createStatement();
+		ResultSet rs =
+			stmt.executeQuery(
+				"SELECT * FROM TEMSA_PORTCONFIG ORDER BY PARAMETER");
+		while (rs.next())
+		{
+			//Temp Folder
+			//wdContext.currentCONFIG1Element().setTemp_Folder("/usr/sap/DYNPRO_FOLDER/");
+			String path_param = "";
+			if(System.getProperty("os.name").indexOf("indows")>=0)
+				path_param="TEMP_FOLDER_NAME_WIN";
+			else path_param = "TEMP_FOLDER_NAME";
+			
+			if (rs.getString("AREA").equals("CATS2")
+				&& rs.getString("PARAMETER").equals(path_param))
+			{
+				//wdComponentAPI.getMessageManager().reportSuccess("2");
+				wdContext.currentCONFIG1Element().setTemp_Folder(
+					rs.getString("VAL"));
+			}
+
+			//				KM Folder
+			if (rs.getString("AREA").equals("CATS2")
+				&& rs.getString("PARAMETER").equals("RDA_KM_FOLDER"))
+			{
+				//wdComponentAPI.getMessageManager().reportSuccess("3");
+				wdContext.currentCONFIG1Element().setKM_Folder(rs.getString("VAL"));
+			}
+		}
+		con.close();
+	}
+	catch (NamingException e)
+	{
+		e.printStackTrace();
+	}
+	catch (SQLException e)
+	{
+		e.printStackTrace();
+	}
+	catch (Exception e)
+	{
+		wdComponentAPI.getMessageManager().reportSuccess("123");
+	}
+    //@@end
+  }
+
+".
+
+Project Properties.wdproperties: "
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MetaDataAPI generated on: Tuesday, November 12, 2013 5:12:29 PM CET -->
+<ProjectProperties xmlns="http://xml.sap.com/2002/10/metamodel/webdynpro" xmlns:IDX="urn:sap.com:WebDynpro.ProjectProperties:3.0" mmRelease="7.00" mmVersion="3.0" mmTimestamp="1384272749862" name="ProjectProperties" package="" masterLanguage="en">
+	<ProjectProperties.JcoReferences>
+		<LibraryReference libraryName="TEP071__SINGLEUSER_METADATA_DEST" name="0">
+		</LibraryReference>
+		<LibraryReference libraryName="TEP071__SINGLEUSER_MODEL_DEST" name="1">
+		</LibraryReference>
+	</ProjectProperties.JcoReferences>
+	<ProjectProperties.LibraryReferences>
+		<LibraryReference libraryName="tc~cm~arfc2" name="0">
+		</LibraryReference>
+	</ProjectProperties.LibraryReferences>
+	<ProjectProperties.SharingReferences>
+		<LibraryReference libraryName="PORTAL:sap.com/com.sap.km.application" name="0">
+		</LibraryReference>
+	</ProjectProperties.SharingReferences>
+</ProjectProperties>
+".
+
+Destination Detail
+RFC Destination: TEP071__SINGLE_USER_MODEL_DEST and TEP071__SINGLEUSER_METADATA_DEST
+
+Connection and Transport
+
+Load Balancing: Yes
+
+Local System Connection: (unchecked)
+
+Target Host: (empty)
+
+System Number: (empty)
+
+System ID: TEP
+
+Message Server: teperpcls
+
+Message Server Service: sapmsTEP
+
+Logon Group: PUBLIC
+
+Gateway Host: teperpcls
+
+Gateway Service: sapgw00
+
+Logon Data:
+
+Authentication: Technical User
+
+Client: 071
+
+Username: Portalrfc3
+
+Password: TppAdn01
+
+Here is URL: http://tuaportalprod:50000
