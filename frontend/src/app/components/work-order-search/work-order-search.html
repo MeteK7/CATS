@@ -5,124 +5,87 @@
   </div>
 
   <div class="search-form" *ngIf="!isLoading">
-    <!-- VIN Search -->
+    <!-- Search Criteria -->
     <div class="form-section">
-      <h3>VIN Search</h3>
-      <div class="form-row">
-        <label for="vin">VIN Number:</label>
-        <input 
-          type="text" 
-          id="vin" 
-          [(ngModel)]="searchCriteria.vin" 
-          placeholder="Enter VIN number"
-          class="form-input">
-      </div>
-    </div>
-
-    <!-- Work Order Types -->
-    <div class="form-section">
-      <h3>Work Order Types</h3>
-      <div class="checkbox-group">
-        <div *ngFor="let woType of formData.wo_types" class="checkbox-item">
-          <input 
-            type="checkbox" 
-            [id]="'wo-type-' + woType.value"
-            [value]="woType.value"
-            (change)="onWoTypeChange($event)">
-          <label [for]="'wo-type-' + woType.value">{{woType.text}}</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Work Order Status -->
-    <div class="form-section">
-      <h3>Work Order Status</h3>
-      <div class="checkbox-group">
-        <div *ngFor="let woStatus of formData.wo_statuses" class="checkbox-item">
-          <input 
-            type="checkbox" 
-            [id]="'wo-status-' + woStatus.value"
-            [value]="woStatus.value"
-            (change)="onWoStatusChange($event)">
-          <label [for]="'wo-status-' + woStatus.value">{{woStatus.text}}</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Foreground Status -->
-    <div class="form-section">
-      <h3>Foreground Status</h3>
-      <div class="checkbox-group">
-        <div *ngFor="let fgStatus of formData.fg_statuses" class="checkbox-item">
-          <input 
-            type="checkbox" 
-            [id]="'fg-status-' + fgStatus.value"
-            [value]="fgStatus.value"
-            (change)="onFgStatusChange($event)">
-          <label [for]="'fg-status-' + fgStatus.value">{{fgStatus.text}}</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Dropdowns -->
-    <div class="form-section">
-      <h3>Additional Criteria</h3>
+      <h3>Search Criteria</h3>
       <div class="form-row">
         <div class="form-column">
-          <label for="country">Country:</label>
-          <select id="country" [(ngModel)]="searchCriteria.country" class="form-select">
-            <option value="">Select Country</option>
-            <option *ngFor="let country of formData.countries" [value]="country.value">{{country.text}}</option>
-          </select>
+          <label for="vin">VIN Number:</label>
+          <input 
+            type="text" 
+            id="vin" 
+            [(ngModel)]="searchCriteria.vin" 
+            placeholder="Enter VIN number"
+            class="form-input">
         </div>
         
         <div class="form-column">
-          <label for="ra-country">RA Country:</label>
-          <select id="ra-country" [(ngModel)]="searchCriteria.ra_country" class="form-select">
-            <option value="">Select RA Country</option>
-            <option *ngFor="let raCountry of formData.ra_countries" [value]="raCountry.value">{{raCountry.text}}</option>
-          </select>
+          <label for="dealer-code">Dealer Code:</label>
+          <input 
+            type="text" 
+            id="dealer-code" 
+            [(ngModel)]="searchCriteria.dealer_code" 
+            placeholder="Enter dealer code"
+            class="form-input">
         </div>
       </div>
-
+      
       <div class="form-row">
         <div class="form-column">
-          <label for="approval-status">Approval Status:</label>
-          <select id="approval-status" [(ngModel)]="searchCriteria.wonay" class="form-select">
-            <option value="">Select Approval Status</option>
-            <option *ngFor="let approvalStatus of formData.approval_statuses" [value]="approvalStatus.value">{{approvalStatus.text}}</option>
-          </select>
+          <label for="wo-no">Work Order No:</label>
+          <input 
+            type="text" 
+            id="wo-no" 
+            [(ngModel)]="searchCriteria.wo_no" 
+            placeholder="Enter work order number"
+            class="form-input">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-column">
+          <label for="date-from">Date From:</label>
+          <input 
+            type="date" 
+            id="date-from" 
+            [(ngModel)]="searchCriteria.date_from" 
+            class="form-input">
         </div>
         
         <div class="form-column">
-          <label for="strategy">Strategy:</label>
-          <select id="strategy" (change)="onStrategyChange($any($event.target).value)" class="form-select">
-            <option value="">Select Strategy</option>
-            <option *ngFor="let strategy of formData.strategies" [value]="strategy.value">{{strategy.text}}</option>
-          </select>
+          <label for="date-to">Date To:</label>
+          <input 
+            type="date" 
+            id="date-to" 
+            [(ngModel)]="searchCriteria.date_to" 
+            class="form-input">
         </div>
       </div>
     </div>
 
-    <!-- Checkboxes -->
+    <!-- Strategy Options -->
     <div class="form-section">
-      <h3>Additional Options</h3>
+      <h3>Strategy Options</h3>
       <div class="checkbox-group">
         <div class="checkbox-item">
-          <input type="checkbox" id="convert-check" [(ngModel)]="convertCheck">
-          <label for="convert-check">Convert Check</label>
+          <input type="checkbox" id="temsa-global" [(ngModel)]="searchCriteria.temsa_global">
+          <label for="temsa-global">Temsa Global</label>
         </div>
         <div class="checkbox-item">
-          <input type="checkbox" id="only-login-user" [(ngModel)]="onlyLoginUser">
-          <label for="only-login-user">Only Login User</label>
+          <input type="checkbox" id="temsa-global-gwk" [(ngModel)]="searchCriteria.temsa_global_gwk">
+          <label for="temsa-global-gwk">Temsa Global GW&TK</label>
         </div>
         <div class="checkbox-item">
-          <input type="checkbox" id="egypt-selected" [(ngModel)]="egyptSelected">
-          <label for="egypt-selected">Egypt Selected</label>
+          <input type="checkbox" id="germany" [(ngModel)]="searchCriteria.germany">
+          <label for="germany">Germany</label>
         </div>
         <div class="checkbox-item">
-          <input type="checkbox" id="demo-selected" [(ngModel)]="demoSelected">
-          <label for="demo-selected">Demo Selected</label>
+          <input type="checkbox" id="france" [(ngModel)]="searchCriteria.france">
+          <label for="france">France</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="north-america" [(ngModel)]="searchCriteria.north_america">
+          <label for="north-america">North America</label>
         </div>
       </div>
     </div>

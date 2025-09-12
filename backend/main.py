@@ -35,32 +35,19 @@ class WorkOrderSearchRequest(BaseModel):
     i_lang: str = "EN"
     i_usercode: str
     
-    # Search criteria
-    wo_type: Optional[str] = None
-    wo_type_multi: Optional[str] = None  # Comma-separated list
-    wo_status: Optional[str] = None
-    wo_status_multi: Optional[str] = None  # Comma-separated list
-    fg_status_multi: Optional[str] = None  # Comma-separated list
-    country: Optional[str] = None
-    wonay: Optional[str] = None  # Approval status
-    ra_country: Optional[str] = None
+    # Simplified search criteria
     vin: Optional[str] = None
+    dealer_code: Optional[str] = None
+    wo_no: Optional[str] = None
+    date_from: Optional[str] = None
+    date_to: Optional[str] = None
     
-    # Strategy flags
-    ostrateji_td: Optional[str] = None
-    ostrateji_tg: Optional[str] = None
-    ostrateji_ti: Optional[str] = None
-    ostrateji_tf: Optional[str] = None
-    ostrateji_tx: Optional[str] = None
-    ostrateji_ty: Optional[str] = None
-    ostrateji_tz: Optional[str] = None
-    ostrateji_tu: Optional[str] = None
-    
-    # Checkbox flags
-    zcats_wo_conv: Optional[str] = None  # Convert check
-    creuser: Optional[str] = None  # Only login user
-    zgos: Optional[str] = None  # Egypt selected
-    demo: Optional[str] = None  # Demo selected
+    # Strategy checkboxes
+    temsa_global: Optional[bool] = None
+    temsa_global_gwk: Optional[bool] = None
+    germany: Optional[bool] = None
+    france: Optional[bool] = None
+    north_america: Optional[bool] = None
 
 class WorkOrderItem(BaseModel):
     """Work order item from search results"""

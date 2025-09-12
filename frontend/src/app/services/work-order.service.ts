@@ -8,39 +8,22 @@ interface DropdownOption {
 }
 
 interface SearchFormData {
-  wo_types: DropdownOption[];
-  wo_statuses: DropdownOption[];
-  fg_statuses: DropdownOption[];
-  countries: DropdownOption[];
-  approval_statuses: DropdownOption[];
-  ra_countries: DropdownOption[];
-  strategies: DropdownOption[];
+  // No dropdown data needed for simplified search
 }
 
 interface WorkOrderSearchRequest {
   i_lang: string;
   i_usercode: string;
-  wo_type?: string;
-  wo_type_multi?: string;
-  wo_status?: string;
-  wo_status_multi?: string;
-  fg_status_multi?: string;
-  country?: string;
-  wonay?: string;
-  ra_country?: string;
   vin?: string;
-  ostrateji_td?: string;
-  ostrateji_tg?: string;
-  ostrateji_ti?: string;
-  ostrateji_tf?: string;
-  ostrateji_tx?: string;
-  ostrateji_ty?: string;
-  ostrateji_tz?: string;
-  ostrateji_tu?: string;
-  zcats_wo_conv?: string;
-  creuser?: string;
-  zgos?: string;
-  demo?: string;
+  dealer_code?: string;
+  wo_no?: string;
+  date_from?: string;
+  date_to?: string;
+  temsa_global?: boolean;
+  temsa_global_gwk?: boolean;
+  germany?: boolean;
+  france?: boolean;
+  north_america?: boolean;
 }
 
 interface WorkOrderItem {
