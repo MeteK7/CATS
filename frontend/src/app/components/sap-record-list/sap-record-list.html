@@ -1,0 +1,59 @@
+<div class="sap-record-list">
+  <div class="header">
+    <h2>SAP Records</h2>
+    <div class="actions">
+      <button class="btn btn-primary" (click)="refreshRecords()">Refresh</button>
+      <button class="btn btn-success" routerLink="/records/new">Add New Record</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading SAP records...
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error" class="records-container">
+    <div *ngIf="records.length === 0" class="no-records">
+      No SAP records found. <a routerLink="/records/new">Create the first record</a>.
+    </div>
+
+    <div *ngIf="records.length > 0" class="records-table">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Data</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of records">
+            <td>{{ record.id }}</td>
+            <td>
+              <div class="data-preview">
+                <div *ngFor="let item of record.data | keyvalue" class="data-item">
+                  <strong>{{ item.key }}:</strong> {{ item.value }}
+                </div>
+              </div>
+            </td>
+            <td class="actions">
+              <button 
+                class="btn btn-sm btn-primary" 
+                [routerLink]="['/records', record.id, 'edit']">
+                Edit
+              </button>
+              <button 
+                class="btn btn-sm btn-danger" 
+                (click)="deleteRecord(record.id!)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<div class="sap-record-form">
+  <div class="header">
+    <h2>{{ isEditMode ? 'Edit' : 'Create' }} SAP Record</h2>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    {{ isEditMode ? 'Loading record...' : 'Saving record...' }}
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <form *ngIf="!loading" (ngSubmit)="onSubmit()" #recordForm="ngForm">
+    <div class="form-section">
+      <h3>Record Data</h3>
+      
+      <div class="existing-fields">
+        <div *ngFor="let key of getDataKeys()" class="field-row">
+          <label>{{ key }}</label>
+          <div class="field-input">
+            <input 
+              type="text" 
+              [(ngModel)]="record.data[key]" 
+              [name]="'field_' + key"
+              class="form-control">
+            <button 
+              type="button" 
+              class="btn btn-danger btn-sm" 
+              (click)="removeField(key)">
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="add-field-section">
+        <h4>Add New Field</h4>
+        <div class="add-field-row">
+          <input 
+            type="text" 
+            [(ngModel)]="newFieldKey" 
+            name="newFieldKey"
+            placeholder="Field name" 
+            class="form-control">
+          <input 
+            type="text" 
+            [(ngModel)]="newFieldValue" 
+            name="newFieldValue"
+            placeholder="Field value" 
+            class="form-control">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="addField()"
+            [disabled]="!newFieldKey || !newFieldValue">
+            Add Field
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="getDataKeys().length === 0">
+        {{ isEditMode ? 'Update' : 'Create' }} Record
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
