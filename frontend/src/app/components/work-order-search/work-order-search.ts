@@ -60,7 +60,7 @@ export class WorkOrderSearchComponent implements OnInit {
   // Search criteria
   searchCriteria: WorkOrderSearchRequest = {
     i_lang: 'EN',
-    i_usercode: 'TESTUSER'
+    i_usercode: 'mkaba'
   };
 
   // Search results
@@ -115,7 +115,7 @@ export class WorkOrderSearchComponent implements OnInit {
     // Reset search criteria
     this.searchCriteria = {
       i_lang: 'EN',
-      i_usercode: 'TESTUSER'
+      i_usercode: 'mkaba'
     };
 
     // No additional state to reset for simplified search

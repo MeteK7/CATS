@@ -215,10 +215,6 @@ async def get_search_form_data():
 async def search_work_orders(search_request: WorkOrderSearchRequest):
     """Search work orders using Zcatsv2_Wo_Get_List RFC"""
     try:
-        # SAP OData integration using ZTEM_TEST_CATS_SRV service
-        # Replaces mock data with real SAP work order data
-        
-        # Connect to SAP OData service for real work order data
         from sap_odata_client import SAPODataClient
         
         # Convert search request to dict for SAP client
