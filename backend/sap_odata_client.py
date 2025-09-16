@@ -60,20 +60,20 @@ class SAPODataClient:
         # VIN filter (escaped)
         if search_criteria.get('vin'):
             escaped_vin = self._escape_odata_string(search_criteria['vin'])
-            vin_filter = f"substringof('{escaped_vin}', Vin)"
+            vin_filter = f"Vin eq '{escaped_vin}'"
             filters.append(vin_filter)
 
         # Dealer Code filter (escaped)
         if search_criteria.get('dealer_code'):
             escaped_dealer = self._escape_odata_string(
                 search_criteria['dealer_code'])
-            dealer_filter = f"substringof('{escaped_dealer}', DealerCode)"
+            dealer_filter = f"DealerCode eq '{escaped_dealer}'"
             filters.append(dealer_filter)
 
         # Work Order Number filter (escaped)
         if search_criteria.get('wo_no'):
             escaped_wo = self._escape_odata_string(search_criteria['wo_no'])
-            wo_filter = f"substringof('{escaped_wo}', Wono)"
+            wo_filter = f"Wono eq '{escaped_wo}'"
             filters.append(wo_filter)
 
         # Date range filters
