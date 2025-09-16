@@ -8,16 +8,32 @@ import xml.etree.ElementTree as ET
 from typing import List, Dict, Optional
 from datetime import datetime
 import os
+import json
 from urllib.parse import quote
+import base64
 
 
 class SAPODataClient:
     """Client for SAP OData service ZTEM_TEST_CATS_SRV"""
     
     def __init__(self):
-        self.base_url = os.getenv("SAP_BASE_URL", "http://10.90.13.15:8000")
+        # Ensure HTTPS for production security
+        self.base_url = os.getenv("SAP_BASE_URL", "https://10.90.13.15:8000")
+        if not self.base_url.startswith("https://"):
+            if os.getenv("SAP_FORCE_HTTPS", "true").lower() == "true":
+                raise ValueError("SAP_BASE_URL must use HTTPS for security. Set SAP_FORCE_HTTPS=false to override.")
+        
         self.service_path = "/sap/opu/odata/sap/ZTEM_TEST_CATS_SRV"
         self.entity_set = "WOHeaderSet"
+        
+        # Authentication configuration
+        self.sap_user = os.getenv("SAP_USER")
+        self.sap_password = os.getenv("SAP_PASSWD")
+        self.auth_mode = os.getenv("SAP_AUTH_MODE", "basic").lower()
+        
+        # Request timeout and retry configuration
+        self.timeout = float(os.getenv("SAP_TIMEOUT", "30.0"))
+        self.max_results = int(os.getenv("SAP_MAX_RESULTS", "100"))
         
         # XML namespaces for parsing
         self.namespaces = {
@@ -26,23 +42,33 @@ class SAPODataClient:
             'm': 'http://schemas.microsoft.com/ado/2007/08/dataservices/metadata'
         }
     
+    def _escape_odata_string(self, value: str) -> str:
+        """Escape string value for OData $filter to prevent injection"""
+        if not value:
+            return ""
+        # Escape single quotes by doubling them (OData standard)
+        return str(value).replace("'", "''")
+    
     def _build_filter(self, search_criteria: Dict) -> str:
         """Build OData $filter parameter from search criteria"""
         filters = []
         
-        # VIN filter
+        # VIN filter (escaped)
         if search_criteria.get('vin'):
-            vin_filter = f"substringof('{search_criteria['vin']}', Vin)"
+            escaped_vin = self._escape_odata_string(search_criteria['vin'])
+            vin_filter = f"substringof('{escaped_vin}', Vin)"
             filters.append(vin_filter)
         
-        # Dealer Code filter  
+        # Dealer Code filter (escaped)
         if search_criteria.get('dealer_code'):
-            dealer_filter = f"substringof('{search_criteria['dealer_code']}', DealerCode)"
+            escaped_dealer = self._escape_odata_string(search_criteria['dealer_code'])
+            dealer_filter = f"substringof('{escaped_dealer}', DealerCode)"
             filters.append(dealer_filter)
         
-        # Work Order Number filter
+        # Work Order Number filter (escaped)
         if search_criteria.get('wo_no'):
-            wo_filter = f"substringof('{search_criteria['wo_no']}', Wono)"
+            escaped_wo = self._escape_odata_string(search_criteria['wo_no'])
+            wo_filter = f"substringof('{escaped_wo}', Wono)"
             filters.append(wo_filter)
         
         # Date range filters
@@ -109,7 +135,8 @@ class SAPODataClient:
             return work_orders
             
         except ET.ParseError as e:
-            raise Exception(f"Failed to parse SAP OData response: {e}")
+            # Let ET.ParseError propagate for proper fallback handling
+            raise e
     
     def _map_to_work_order_item(self, sap_data: Dict) -> Dict:
         """Map SAP OData fields to our WorkOrderItem structure"""
@@ -131,6 +158,45 @@ class SAPODataClient:
             "reject_note": sap_data.get('Wonot', ''),
             "enability_button": sap_data.get('Wonay') == 'X'
         }
+    
+    def _get_auth(self) -> Optional[httpx.Auth]:
+        """Get authentication object based on configuration"""
+        if self.auth_mode == "basic" and self.sap_user and self.sap_password:
+            return httpx.BasicAuth(self.sap_user, self.sap_password)
+        return None
+    
+    def _get_headers(self, format_type: str = "xml") -> Dict[str, str]:
+        """Get request headers with proper content negotiation"""
+        headers = {
+            "User-Agent": "SAP-Portal-Modernization/1.0",
+            "Cache-Control": "no-cache"
+        }
+        
+        if format_type == "xml":
+            headers["Accept"] = "application/atom+xml"
+        elif format_type == "json":
+            headers["Accept"] = "application/json"
+            
+        return headers
+    
+    def _parse_json_response(self, json_content: str) -> List[Dict]:
+        """Parse SAP OData JSON response into list of work orders"""
+        try:
+            data = json.loads(json_content)
+            work_orders = []
+            
+            # Handle OData v2 JSON format
+            if "d" in data and "results" in data["d"]:
+                for result in data["d"]["results"]:
+                    work_orders.append(result)
+            elif "value" in data:  # OData v4 format
+                work_orders = data["value"]
+            
+            return work_orders
+            
+        except json.JSONDecodeError as e:
+            # Let JSONDecodeError propagate for proper fallback handling
+            raise e
     
     async def search_work_orders(self, search_criteria: Dict) -> List[Dict]:
         """Search work orders using SAP OData service"""
@@ -154,16 +220,55 @@ class SAPODataClient:
             if combined_filters:
                 params['$filter'] = ' and '.join(combined_filters)
             
-            # Set reasonable limit
-            params['$top'] = '100'
+            # Set configurable limit
+            params['$top'] = str(self.max_results)
             
-            # Make HTTP request to SAP
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.get(url, params=params)
+            # Get authentication and headers
+            auth = self._get_auth()
+            headers = self._get_headers("xml")  # Try XML first, fallback to JSON if needed
+            
+            # Make HTTP request to SAP with authentication and proper headers
+            async with httpx.AsyncClient(
+                timeout=self.timeout,
+                verify=True  # Enforce SSL certificate verification
+            ) as client:
+                response = await client.get(
+                    url, 
+                    params=params, 
+                    auth=auth, 
+                    headers=headers
+                )
+                
+                # Handle 406/415 status codes by retrying with JSON Accept header
+                if response.status_code in [406, 415]:
+                    # Server doesn't support XML format, try JSON
+                    json_headers = self._get_headers("json")
+                    response = await client.get(
+                        url, 
+                        params=params, 
+                        auth=auth, 
+                        headers=json_headers
+                    )
+                
+                # Now check for other HTTP errors
                 response.raise_for_status()
                 
-                # Parse XML response
-                sap_work_orders = self._parse_xml_response(response.text)
+                # Try to parse based on Content-Type or fallback
+                content_type = response.headers.get("content-type", "").lower()
+                
+                if "application/json" in content_type:
+                    # Response is JSON, parse directly
+                    sap_work_orders = self._parse_json_response(response.text)
+                else:
+                    # Try to parse as XML first, fallback to JSON on parsing failure
+                    try:
+                        sap_work_orders = self._parse_xml_response(response.text)
+                    except ET.ParseError:
+                        # XML parsing failed, try JSON parsing of same response
+                        try:
+                            sap_work_orders = self._parse_json_response(response.text)
+                        except json.JSONDecodeError as e:
+                            raise Exception(f"SAP server returned invalid data format: {e}")
                 
                 # Map to our data structure
                 work_orders = []
@@ -180,10 +285,19 @@ class SAPODataClient:
             # Request timed out
             raise Exception("SAP request timed out. The SAP server may be experiencing high load.")
         except httpx.HTTPStatusError as e:
-            # HTTP error from SAP
-            raise Exception(f"SAP server returned error {e.response.status_code}: {e.response.text}")
-        except ET.ParseError as e:
-            # XML parsing error
+            # Handle authentication errors specifically
+            if e.response.status_code in [401, 403]:
+                raise Exception("SAP authentication failed. Please check your SAP credentials and permissions.")
+            elif e.response.status_code in [406, 415]:
+                # This should be handled by the retry logic above, but just in case
+                raise Exception("SAP server does not support the requested data format. Please contact system administrator.")
+            else:
+                # Don't expose SAP internals to clients, log full details server-side
+                import logging
+                logging.error(f"SAP HTTP Error {e.response.status_code}: {e.response.text}")
+                raise Exception(f"SAP server returned error {e.response.status_code}. Please contact system administrator.")
+        except (ET.ParseError, json.JSONDecodeError) as e:
+            # Parsing error (XML or JSON)
             raise Exception(f"Invalid response format from SAP server: {e}")
         except Exception as e:
             # General error

@@ -10,12 +10,15 @@ load_dotenv()
 app = FastAPI(title="SAP Portal API", version="1.0.0")
 
 # Configure CORS for Angular frontend
+# Get allowed origins from environment, default to development frontend
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5000,https://localhost:5000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend domain
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
+    allow_headers=["Content-Type", "Authorization", "Accept", "X-Requested-With"],
 )
 
 # Pydantic models for API requests/responses
@@ -216,7 +219,7 @@ async def search_work_orders(search_request: WorkOrderSearchRequest):
         # Replaces mock data with real SAP work order data
         
         # Connect to SAP OData service for real work order data
-        from .sap_odata_client import SAPODataClient
+        from sap_odata_client import SAPODataClient
         
         # Convert search request to dict for SAP client
         search_dict = {
