@@ -212,169 +212,32 @@ async def get_search_form_data():
 async def search_work_orders(search_request: WorkOrderSearchRequest):
     """Search work orders using Zcatsv2_Wo_Get_List RFC"""
     try:
-        # TODO: Implement actual SAP RFC call to Zcatsv2_Wo_Get_List
-        # For now, return mock data that matches the expected structure
+        # SAP OData integration using ZTEM_TEST_CATS_SRV service
+        # Replaces mock data with real SAP work order data
         
-        # Generate realistic mock data with proper filtering based on search criteria
-        from datetime import datetime
+        # Connect to SAP OData service for real work order data
+        from .sap_odata_client import SAPODataClient
         
-        # Create comprehensive mock data that reflects different strategies and scenarios
-        base_work_orders = [
-            {
-                "credate": "2024-01-15",
-                "dealer_code": "TG001",
-                "vin": "1HGBH41JXMN109186",
-                "wo_status": "41",
-                "wo_status_text": "Pending Approval",
-                "wo_type": "10",
-                "wo_type_text": "Warranty Repair",
-                "fg_status_text": "Completed",
-                "pds": "",
-                "demo": "",
-                "wono": "WO001001",
-                "creuser": "TESTUSER",
-                "ra_country_text": "Turkey",
-                "wo_onay_text": "Pending",
-                "reject_note": "",
-                "enability_button": True,
-                "strategy": "temsa_global"
-            },
-            {
-                "credate": "2024-01-16",
-                "dealer_code": "TG002",
-                "vin": "1HGBH41JXMN109187",
-                "wo_status": "30",
-                "wo_status_text": "In Progress",
-                "wo_type": "20",
-                "wo_type_text": "Customer Paid Repair",
-                "fg_status_text": "In Progress",
-                "pds": "",
-                "demo": "",
-                "wono": "WO001002",
-                "creuser": "TESTUSER",
-                "ra_country_text": "Turkey",
-                "wo_onay_text": "Approved",
-                "reject_note": "",
-                "enability_button": False,
-                "strategy": "temsa_global_gwk"
-            },
-            {
-                "credate": "2024-01-14",
-                "dealer_code": "DE002",
-                "vin": "2T1BURHE0KC123456",
-                "wo_status": "30",
-                "wo_status_text": "In Progress",
-                "wo_type": "20",
-                "wo_type_text": "Customer Paid Repair",
-                "fg_status_text": "In Progress",
-                "pds": "",
-                "demo": "",
-                "wono": "WO002001",
-                "creuser": "TESTUSER",
-                "ra_country_text": "Germany",
-                "wo_onay_text": "Approved",
-                "reject_note": "",
-                "enability_button": False,
-                "strategy": "germany"
-            },
-            {
-                "credate": "2024-01-13",
-                "dealer_code": "FR003",
-                "vin": "3FA6P0HD9DR123789",
-                "wo_status": "50",
-                "wo_status_text": "Closed",
-                "wo_type": "40",
-                "wo_type_text": "Recall",
-                "fg_status_text": "Completed",
-                "pds": "X",
-                "demo": "",
-                "wono": "WO003001",
-                "creuser": "ADMIN",
-                "ra_country_text": "France",
-                "wo_onay_text": "Approved",
-                "reject_note": "Quality check completed",
-                "enability_button": False,
-                "strategy": "france"
-            },
-            {
-                "credate": "2024-01-12",
-                "dealer_code": "NA004",
-                "vin": "5NPE34AF6DH123456",
-                "wo_status": "20",
-                "wo_status_text": "Released",
-                "wo_type": "10",
-                "wo_type_text": "Warranty Repair",
-                "fg_status_text": "Not Started",
-                "pds": "",
-                "demo": "",
-                "wono": "WO004001",
-                "creuser": "USUSER",
-                "ra_country_text": "United States",
-                "wo_onay_text": "Approved",
-                "reject_note": "",
-                "enability_button": True,
-                "strategy": "north_america"
-            }
-        ]
+        # Convert search request to dict for SAP client
+        search_dict = {
+            'vin': search_request.vin,
+            'dealer_code': search_request.dealer_code,
+            'wo_no': search_request.wo_no,
+            'date_from': search_request.date_from,
+            'date_to': search_request.date_to,
+            'temsa_global': search_request.temsa_global,
+            'temsa_global_gwk': search_request.temsa_global_gwk,
+            'germany': search_request.germany,
+            'france': search_request.france,
+            'north_america': search_request.north_america
+        }
         
-        # Filter mock data based on search criteria
-        filtered_work_orders = []
-        for wo_data in base_work_orders:
-            # Apply text filters (case-insensitive partial matching)
-            if search_request.vin and search_request.vin.upper() not in wo_data["vin"].upper():
-                continue
-            if search_request.dealer_code and search_request.dealer_code.upper() not in wo_data["dealer_code"].upper():
-                continue
-            if search_request.wo_no and search_request.wo_no.upper() not in wo_data["wono"].upper():
-                continue
-                
-            # Date range filter
-            wo_date = datetime.strptime(wo_data["credate"], "%Y-%m-%d")
-            if search_request.date_from:
-                try:
-                    from_date = datetime.strptime(search_request.date_from, "%Y-%m-%d")
-                    if wo_date < from_date:
-                        continue
-                except ValueError:
-                    pass  # Ignore invalid date format
-                    
-            if search_request.date_to:
-                try:
-                    to_date = datetime.strptime(search_request.date_to, "%Y-%m-%d")
-                    if wo_date > to_date:
-                        continue
-                except ValueError:
-                    pass  # Ignore invalid date format
-                
-            # Strategy filter - if no strategies selected, show all
-            strategy_selected = any([
-                search_request.temsa_global, 
-                search_request.temsa_global_gwk,
-                search_request.germany, 
-                search_request.france, 
-                search_request.north_america
-            ])
-            
-            if strategy_selected:
-                strategy_match = False
-                if search_request.temsa_global and wo_data["strategy"] == "temsa_global":
-                    strategy_match = True
-                elif search_request.temsa_global_gwk and wo_data["strategy"] == "temsa_global_gwk":
-                    strategy_match = True
-                elif search_request.germany and wo_data["strategy"] == "germany":
-                    strategy_match = True
-                elif search_request.france and wo_data["strategy"] == "france":
-                    strategy_match = True
-                elif search_request.north_america and wo_data["strategy"] == "north_america":
-                    strategy_match = True
-                    
-                if not strategy_match:
-                    continue
-                
-            # Create WorkOrderItem (remove strategy field as it's not part of the API response)
-            filtered_work_orders.append(WorkOrderItem(**{k: v for k, v in wo_data.items() if k != "strategy"}))
+        # Initialize SAP client and fetch work orders
+        sap_client = SAPODataClient()
+        sap_work_orders = await sap_client.search_work_orders(search_dict)
         
-        mock_work_orders = filtered_work_orders
+        # Convert to WorkOrderItem objects
+        mock_work_orders = [WorkOrderItem(**wo_data) for wo_data in sap_work_orders]
         
         return WorkOrderSearchResponse(
             success=True,

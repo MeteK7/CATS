@@ -1,0 +1,77 @@
+Hello. I have prepared the OData part for you to create a connection between the Angular front-end and the SAP OData backend.  
+
+Here is a sample OData request:  
+/sap/opu/odata/sap/ZTEM_TEST_CATS_SRV/WOHeaderSet?$filter=Wono eq '157736'
+
+Here is a sample response:  
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:base="http://tuafioridev.temsa.pvt:8000/sap/opu/odata/sap/ZTEM_TEST_CATS_SRV/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+  <id>http://tuafioridev.temsa.pvt:8000/sap/opu/odata/sap/ZTEM_TEST_CATS_SRV/WOHeaderSet/</id>
+  <title type="text">WOHeaderSet</title>
+  <updated>2025-09-16T08:09:43Z</updated>
+  <entry>
+    <id>http://tuafioridev.temsa.pvt:8000/sap/opu/odata/sap/ZTEM_TEST_CATS_SRV/WOHeaderSet('0000157736')</id>
+    <title type="text">WOHeaderSet('0000157736')</title>
+    <updated>2025-09-16T08:09:43Z</updated>
+    <content type="application/xml">
+      <m:properties>
+        <d:DealerCode>0000103573</d:DealerCode>
+        <d:Vin>NLTRHUK8001000873</d:Vin>
+        <d:Wono>0000157736</d:Wono>
+        <d:Credate>2025-07-04T00:00:00</d:Credate>
+        <d:WoType>WA</d:WoType>
+        <d:WoTypeText>Warranty</d:WoTypeText>
+        <d:WoStatus>61</d:WoStatus>
+        <d:WoStatusText>Credited</d:WoStatusText>
+        <d:Creuser>MOKILINC</d:Creuser>
+        <d:Wonay>X</d:Wonay>
+        <d:Wonaytext>Approved</d:Wonaytext>
+        <d:Wonot>WO_ONAY_MD_NOT_0000157736</d:Wonot>
+        <d:Name1>ANDRES MARIN AYALA, S.L.</d:Name1>
+        <d:Landx>Spain</d:Landx>
+        <d:GtClaimed>5160.0000</d:GtClaimed>
+        <d:GtAccepted>5160.0000</d:GtAccepted>
+        <d:PayTexts>FG( 1 ) LIEFERANTENVEREINBARUNG</d:PayTexts>
+        <d:KunnrName1>TRANSPORTES ANTONIO DIAZ HERNANDEZ,</d:KunnrName1>
+        <d:Plaka>2986MNS</d:Plaka>
+        <d:Model>HD 13</d:Model>
+      </m:properties>
+    </content>
+  </entry>
+</feed>
+
+Here is the metadata ($metadata):  
+<?xml version="1.0" encoding="UTF-8"?>
+<edmx:Edmx xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" Version="1.0">
+  <edmx:DataServices m:DataServiceVersion="2.0">
+    <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZTEM_TEST_CATS_SRV">
+      <EntityType Name="WOHeader">
+        <Key>
+          <PropertyRef Name="Wono"/>
+        </Key>
+        <Property Name="DealerCode" Type="Edm.String" MaxLength="10"/>
+        <Property Name="Vin" Type="Edm.String" MaxLength="30"/>
+        <Property Name="Wono" Type="Edm.String" MaxLength="10"/>
+        <Property Name="Credate" Type="Edm.DateTime" Precision="7"/>
+        <Property Name="WoType" Type="Edm.String" MaxLength="2"/>
+        <Property Name="WoTypeText" Type="Edm.String" MaxLength="40"/>
+        <Property Name="WoStatus" Type="Edm.String" MaxLength="2"/>
+        <Property Name="WoStatusText" Type="Edm.String" MaxLength="40"/>
+        <Property Name="Creuser" Type="Edm.String" MaxLength="12"/>
+        <Property Name="Wonay" Type="Edm.String" MaxLength="1"/>
+        <Property Name="Wuser" Type="Edm.String" MaxLength="12"/>
+        <Property Name="Wonaytext" Type="Edm.String" MaxLength="30"/>
+        <Property Name="Wonot" Type="Edm.String" MaxLength="70"/>
+        <Property Name="Name1" Type="Edm.String" MaxLength="30"/>
+        <Property Name="Landx" Type="Edm.String" MaxLength="15"/>
+        <Property Name="GtClaimed" Type="Edm.Decimal" Precision="23" Scale="4"/>
+        <Property Name="GtAccepted" Type="Edm.Decimal" Precision="23" Scale="4"/>
+        <Property Name="PayTexts" Type="Edm.String" MaxLength="200"/>
+        <Property Name="KunnrName1" Type="Edm.String" MaxLength="35"/>
+        <Property Name="Plaka" Type="Edm.String" MaxLength="15"/>
+        <Property Name="Model" Type="Edm.String" MaxLength="50"/>
+        <Property Name="OnayAck" Type="Edm.String" MaxLength="4096"/>
+      </EntityType>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
